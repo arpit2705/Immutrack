@@ -64,15 +64,20 @@ export default function Audit() {
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="row"
-				style={{justifyContent:'space-between', marginBottom: 20}}
+				style={{justifyContent:'space-between', marginBottom: 28, alignItems: 'center'}}
 			>
 				<div className="title">
-					<FileSearch size={28} />
+					<FileSearch size={36} strokeWidth={2.5} />
 					Audit Log
 				</div>
-				<div className="status">
+				<motion.div 
+					className="status"
+					initial={{ opacity: 0, scale: 0.9 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: 0.2 }}
+				>
 					{status}
-				</div>
+				</motion.div>
 			</motion.div>
 
 			<motion.div
@@ -122,19 +127,20 @@ export default function Audit() {
 						exit={{ opacity: 0 }}
 						className="card"
 					>
-						<h3 style={{marginBottom: 16}}>Transfer History ({history.length} events)</h3>
+						<h3 style={{marginBottom: 28, fontSize: 24, fontWeight: 700}}>Transfer History ({history.length} events)</h3>
 						<div className="stack">
 							{history.map((evt, idx) => (
 								<motion.div
 									key={idx}
 									initial={{ opacity: 0, x: -20 }}
 									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: idx * 0.1 }}
+									transition={{ delay: idx * 0.08 }}
 									className="card"
 									style={{
-										padding: 16,
-										border: '1px solid rgba(99,102,241,0.2)',
-										background: 'rgba(99,102,241,0.05)'
+										padding: 20,
+										border: '1.5px solid rgba(99,102,241,0.3)',
+										background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(56,214,189,0.05))',
+										marginBottom: idx < history.length - 1 ? 16 : 0
 									}}
 								>
 									<div className="grid-2" style={{marginBottom: 12}}>

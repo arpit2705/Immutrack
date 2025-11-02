@@ -91,15 +91,20 @@ export default function Admin() {
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="row" 
-				style={{justifyContent:'space-between', marginBottom: 20}}
+				style={{justifyContent:'space-between', marginBottom: 28, alignItems: 'center'}}
 			>
 				<div className="title">
-					<Settings size={28} />
+					<Settings size={36} strokeWidth={2.5} />
 					Admin Panel
 				</div>
-				<div className="status">
+				<motion.div 
+					className="status"
+					initial={{ opacity: 0, scale: 0.9 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: 0.2 }}
+				>
 					{status}
-				</div>
+				</motion.div>
 			</motion.div>
 
 			<motion.div
@@ -107,10 +112,10 @@ export default function Admin() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.1 }}
 				className="card"
-				style={{marginBottom: 16}}
+				style={{marginBottom: 28}}
 			>
-				<h3 style={{marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8}}>
-					<Package size={20} />
+				<h3 style={{marginBottom: 28, display: 'flex', alignItems: 'center', gap: 14, fontSize: 24, fontWeight: 700}}>
+					<Package size={26} strokeWidth={2.5} />
 					Register Item
 				</h3>
 				<div className="stack">
@@ -136,7 +141,7 @@ export default function Admin() {
 							<input type="time" className="input" value={time} onChange={(e) => setTime(e.target.value)} />
 						</div>
 					</div>
-					<div className="row" style={{gap: 10, marginTop: 8}}>
+					<div className="row" style={{gap: 12, marginTop: 12}}>
 						<button 
 							onClick={registerItem} 
 							className="btn btn-primary"
@@ -144,18 +149,18 @@ export default function Admin() {
 						>
 							{isLoading ? (
 								<>
-									<div className="spinner" style={{width: 16, height: 16, marginRight: 8}} />
+									<div className="spinner" style={{width: 18, height: 18, marginRight: 8}} />
 									Registering...
 								</>
 							) : (
 								<>
-									<Package size={18} />
+									<Package size={20} />
 									Register Item
 								</>
 							)}
 						</button>
 						<button onClick={generateQr} className="btn btn-primary">
-							<QrCode size={18} />
+							<QrCode size={20} />
 							Generate QR
 						</button>
 					</div>
@@ -171,23 +176,27 @@ export default function Admin() {
 						className="card"
 						style={{marginBottom: 16}}
 					>
-						<div className="row" style={{justifyContent: 'space-between', marginBottom: 12}}>
-							<span className="label">Generated QR Code</span>
-							<button onClick={downloadQR} className="btn" style={{padding: '8px 12px'}}>
-								<Download size={16} />
+						<div className="row" style={{justifyContent: 'space-between', marginBottom: 20, alignItems: 'center'}}>
+							<span className="label" style={{margin: 0}}>Generated QR Code</span>
+							<button onClick={downloadQR} className="btn" style={{padding: '10px 16px'}}>
+								<Download size={18} />
 								Download
 							</button>
 						</div>
-						<div style={{display: 'flex', justifyContent: 'center'}}>
-							<img 
+						<div style={{display: 'flex', justifyContent: 'center', padding: '20px 0'}}>
+							<motion.img 
 								src={qrDataUrl} 
 								alt="QR" 
+								initial={{ scale: 0.9, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
 								style={{ 
-									width: 280, 
-									height: 280, 
-									borderRadius: 12,
-									border: '2px solid rgba(99,102,241,0.3)',
-									boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
+									width: 320, 
+									height: 320, 
+									borderRadius: 16,
+									border: '3px solid rgba(99,102,241,0.4)',
+									boxShadow: '0 12px 40px rgba(99,102,241,0.4), 0 0 60px rgba(99,102,241,0.2)',
+									background: 'white',
+									padding: '16px'
 								}} 
 							/>
 						</div>
@@ -201,8 +210,8 @@ export default function Admin() {
 				transition={{ delay: 0.2 }}
 				className="card"
 			>
-				<h3 style={{marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8}}>
-					<Shield size={20} />
+				<h3 style={{marginBottom: 28, display: 'flex', alignItems: 'center', gap: 14, fontSize: 24, fontWeight: 700}}>
+					<Shield size={26} strokeWidth={2.5} />
 					Handler Authorization
 				</h3>
 				<div className="stack">

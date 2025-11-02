@@ -121,9 +121,10 @@ app.post('/scans', async (req, res) => {
 		
 		console.log('Recovered address:', normalizedRecovered);
 		console.log('Handler address:', normalizedHandler);
+		console.log('Signature verification:', normalizedRecovered === normalizedHandler ? 'PASSED ✓' : 'FAILED ✗');
 		
 		if (normalizedRecovered !== normalizedHandler) {
-			console.error('Signature mismatch:', {
+			console.error('Signature verification failed:', {
 				recovered: normalizedRecovered,
 				handler: normalizedHandler,
 				chainId,
@@ -136,31 +137,41 @@ app.post('/scans', async (req, res) => {
 				details: {
 					recovered: normalizedRecovered,
 					handler: normalizedHandler,
-					chainId
+					chainId,
+					contractAddress: normalizedContractAddress
 				}
 			});
 		}
+		
+		console.log('✓ Signature verification passed');
 
 		// Check if item exists before attempting transfer
 		const item = await contract.items(itemId);
+		console.log('Item lookup:', { itemId, exists: item.exists });
+		
 		if (!item.exists) {
-			console.error('Item not found:', itemId);
+			console.error('✗ Item not found:', itemId);
 			return res.status(400).json({ 
 				error: 'Item not found',
 				details: { itemId }
 			});
 		}
+		
+		console.log('✓ Item found:', { itemId, name: item.name, location: item.location });
 
 		// Check if handler is authorized, if not, auto-authorize it
 		const isAuthorized = await contract.isAuthorizedHandler(normalizedHandler);
+		console.log('Handler authorization status:', isAuthorized ? 'AUTHORIZED ✓' : 'NOT AUTHORIZED');
+		
 		if (!isAuthorized) {
 			console.log('Handler not authorized, auto-authorizing:', normalizedHandler);
 			try {
 				const authTx = await contract.setHandlerAuthorization(normalizedHandler, true);
+				console.log('Authorization transaction sent:', authTx.hash);
 				await authTx.wait();
-				console.log('Handler auto-authorized successfully:', normalizedHandler);
+				console.log('✓ Handler auto-authorized successfully:', normalizedHandler);
 			} catch (authError) {
-				console.error('Failed to auto-authorize handler:', authError);
+				console.error('✗ Failed to auto-authorize handler:', authError);
 				return res.status(403).json({ 
 					error: 'Handler not authorized and failed to auto-authorize. Please authorize this handler address first using the Admin page.',
 					details: { 
@@ -170,6 +181,8 @@ app.post('/scans', async (req, res) => {
 					}
 				});
 			}
+		} else {
+			console.log('✓ Handler is already authorized');
 		}
 
 		// Check wallet balance before attempting transaction
@@ -193,11 +206,16 @@ app.post('/scans', async (req, res) => {
 			timestamp: ts
 		});
 
+		console.log('Executing transferItem transaction...');
 		const tx = await contract.transferItem(itemId, normalizedHandler, location, ts);
-		console.log('Transaction sent:', tx.hash);
+		console.log('✓ Transaction sent:', tx.hash);
+		console.log('   View on Etherscan: https://sepolia.etherscan.io/tx/' + tx.hash);
 		
-		await tx.wait();
-		console.log('Transaction confirmed:', tx.hash);
+		console.log('Waiting for transaction confirmation...');
+		const receipt = await tx.wait();
+		console.log('✓ Transaction confirmed:', tx.hash);
+		console.log('   Block number:', receipt.blockNumber);
+		console.log('   Gas used:', receipt.gasUsed.toString());
 		
 		res.json({ status: 'logged', txHash: tx.hash });
 	} catch (e) {
@@ -262,5 +280,18 @@ app.get('/items/:id/history', async (req, res) => {
 });
 
 app.listen(PORT, () => {
+	console.log('========================================');
+	console.log('  Immutrack Backend Server Started');
+	console.log('========================================');
 	console.log(`API listening on http://localhost:${PORT}`);
+	console.log(`Contract Address: ${CONTRACT_ADDRESS}`);
+	console.log(`Network: ${RPC_URL.includes('sepolia') ? 'Sepolia Testnet' : 'Local'}`);
+	console.log(`Wallet Address: ${wallet.address}`);
+	console.log('========================================');
+	console.log('Verification Features Enabled:');
+	console.log('  ✓ EIP-712 Signature Verification');
+	console.log('  ✓ Handler Authorization Check');
+	console.log('  ✓ Item Existence Validation');
+	console.log('  ✓ Auto-authorization Support');
+	console.log('========================================');
 });

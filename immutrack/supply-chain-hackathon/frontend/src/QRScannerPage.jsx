@@ -354,16 +354,21 @@ export default function QRScannerPage() {
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="row" 
-				style={{justifyContent:'space-between', marginBottom: 20}}
+				style={{justifyContent:'space-between', marginBottom: 28, alignItems: 'center'}}
 			>
 				<div className="title">
-					<Scan size={28} />
+					<Scan size={36} strokeWidth={2.5} />
 					QR Scanner <span className="badge">Sepolia</span>
 				</div>
-				<div className="status">
-					<AlertCircle size={16} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
+				<motion.div 
+					className="status"
+					initial={{ opacity: 0, scale: 0.9 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: 0.2 }}
+				>
+					<AlertCircle size={18} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
 					{status}
-				</div>
+				</motion.div>
 			</motion.div>
 
 			<motion.div 
